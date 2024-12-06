@@ -1,6 +1,6 @@
 <?php
 /**
- * IPInfo.io API Response Classes
+ * IPInfo.io API Response Class
  *
  * Contains all response-related classes for handling IPInfo.io API data.
  * Each class represents a specific data structure returned by the API.
@@ -63,9 +63,7 @@ class Response {
 		return null;
 	}
 
-	//
-	// Plan & Feature Detection
-	//
+	/** Plan & Feature Detection **********************************************/
 
 	/**
 	 * Determine the IPInfo plan based on available data
@@ -112,9 +110,7 @@ class Response {
 		}
 	}
 
-	//
-	// Basic Information
-	//
+	/** Basic Information *****************************************************/
 
 	/**
 	 * Get the IP address
@@ -143,9 +139,7 @@ class Response {
 		return (bool) ( $this->data['anycast'] ?? false );
 	}
 
-	//
-	// Location Information
-	//
+	/** Location Information **************************************************/
 
 	/**
 	 * Get the city name
@@ -192,9 +186,7 @@ class Response {
 		return $this->data['timezone'] ?? null;
 	}
 
-	//
-	// Extended Location Information
-	//
+	/** Extended Location Information *****************************************/
 
 	/**
 	 * Get the country name
@@ -254,9 +246,7 @@ class Response {
 		return $country_code && Locations::is_eu( $country_code );
 	}
 
-	//
-	// Geographical Information
-	//
+	/** Geographical Information **********************************************/
 
 	/**
 	 * Get the coordinates
@@ -301,9 +291,7 @@ class Response {
 		return isset( $this->data['longitude'] ) ? (float) $this->data['longitude'] : null;
 	}
 
-	//
-	// Organization Information
-	//
+	/** Organization Information **********************************************/
 
 	/**
 	 * Get the organization information
@@ -314,9 +302,7 @@ class Response {
 		return $this->data['org'] ?? null;
 	}
 
-	//
-	// Enhanced Information (Basic Plan+)
-	//
+	/** Enhanced Information (Basic Plan+) ************************************/
 
 	/**
 	 * Get ASN information (Basic plan and above)
@@ -327,9 +313,7 @@ class Response {
 		return isset( $this->data['asn'] ) ? new ASN( $this->data['asn'] ) : null;
 	}
 
-	//
-	// Business Information (Business Plan+)
-	//
+	/** Business Information (Business Plan+) *********************************/
 
 	/**
 	 * Get company information (Business plan and above)
@@ -358,9 +342,7 @@ class Response {
 		return isset( $this->data['abuse'] ) ? new Abuse( $this->data['abuse'] ) : null;
 	}
 
-	//
-	// Premium Information
-	//
+	/** Premium Information (Business Plan) ***********************************/
 
 	/**
 	 * Get domains information (Premium plan only)
@@ -370,4 +352,5 @@ class Response {
 	public function get_domains(): ?Domains {
 		return isset( $this->data['domains'] ) ? new Domains( $this->data['domains'] ) : null;
 	}
+
 }
