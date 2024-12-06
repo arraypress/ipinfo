@@ -24,23 +24,75 @@ use ArrayPress\IPInfo\Client;
 // Initialize with your API token
 $client = new Client( 'your-token-here' );
 
-// Get IP information
+// Single IP lookup
 $info = $client->get_ip_info( '8.8.8.8' );
 
-// Access basic data
-$city = $info->get_city();
-$country = $info->get_country();
-$coords = $info->get_coordinates();
+// Get specific field only
+$country = $client->get_field( '8.8.8.8', 'country' );  // Returns: "US"
+$city = $client->get_field( '8.8.8.8', 'city' );       // Returns: "Mountain View"
+
+// Get multiple specific fields
+$fields = $client->get_fields( '8.8.8.8', ['country', 'city', 'org'] );
+// Returns: ['country' => 'US', 'city' => 'Mountain View', 'org' => 'Google LLC']
+
+// Batch processing multiple IPs
+$ips = [ '8.8.8.8', '1.1.1.1' ];
+$batch_results = $client->get_batch_info( $ips );
+foreach ( $batch_results as $ip => $info ) {
+    echo "$ip is located in " . $info->get_city();
+}
 ```
 
 ## Available Methods
 
-### Basic Information
+### Client Methods
+
+```php
+// Initialize client with options
+$client = new Client(
+    'your-token-here',    // API token
+    true,                 // Enable caching (optional, default: true)
+    3600                  // Cache duration in seconds (optional, default: 3600)
+);
+
+// Get complete information for an IP
+$info = $client->get_ip_info( '8.8.8.8' );
+
+// Get specific field
+$field = $client->get_field( '8.8.8.8', 'country' );
+
+// Get multiple fields
+$fields = $client->get_fields( '8.8.8.8', ['country', 'city'] );
+
+// Process multiple IPs (max 1000)
+$results = $client->get_batch_info(
+    [ '8.8.8.8', '1.1.1.1' ], // IP addresses
+    1000,                     // Batch size (optional, default: 1000)
+    false,                    // Filter response (optional, default: false)
+    5                         // Timeout in seconds (optional, default: 5)
+);
+
+// Cache management
+$client->clear_cache( '8.8.8.8' );  // Clear specific IP
+$client->clear_cache();             // Clear all cached data
+```
+
+### Response Methods
+
+#### Basic Information
 
 ```php
 // Get IP address
 $ip = $info->get_ip();
 // Returns: "8.8.8.8"
+
+// Get hostname (if available)
+$hostname = $info->get_hostname();
+// Returns: "dns.google"
+
+// Check if IP is anycast
+$is_anycast = $info->is_anycast();
+// Returns: true/false
 
 // Get city name
 $city = $info->get_city();
@@ -50,13 +102,17 @@ $city = $info->get_city();
 $region = $info->get_region();
 // Returns: "California"
 
-// Get country code
-$country = $info->get_country();
-// Returns: "US"
+// Get country information
+$country_code = $info->get_country();      // Returns: "US"
+$country_name = $info->get_country_name(); // Returns: "United States"
 
 // Get coordinates
 $coords = $info->get_coordinates();
 // Returns: ['latitude' => 37.4056, 'longitude' => -122.0775]
+
+// Individual coordinate access
+$lat = $info->get_latitude();   // Returns: 37.4056
+$long = $info->get_longitude(); // Returns: -122.0775
 
 // Get postal code
 $postal = $info->get_postal();
@@ -65,12 +121,42 @@ $postal = $info->get_postal();
 // Get timezone
 $timezone = $info->get_timezone();
 // Returns: "America/Los_Angeles"
+
+// Get plan level
+$plan = $info->get_plan();
+// Returns: "Free", "Basic", "Business", or "Premium"
+
+// Check feature availability
+$has_asn = $info->has_feature( 'asn' );        // Basic plan and above
+$has_privacy = $info->has_feature( 'privacy' ); // Business plan and above
+$has_domains = $info->has_feature( 'domains' ); // Premium plan only
+
+// Extended country information
+$flag = $info->get_country_flag();
+if ($flag) {
+    $emoji = $flag->get_emoji();     // Returns: "🇺🇸"
+    $unicode = $flag->get_unicode();  // Returns: "U+1F1FA U+1F1F8"
+}
+
+$currency = $info->get_country_currency();
+if ($currency) {
+    $code = $currency->get_code();    // Returns: "USD"
+    $symbol = $currency->get_symbol(); // Returns: "$"
+}
+
+$continent = $info->get_continent();
+if ($continent) {
+    $name = $continent->get_name();   // Returns: "North America"
+    $code = $continent->get_code();   // Returns: "NA"
+}
+
+$is_eu = $info->is_eu(); // Returns: true/false
 ```
 
 ### ASN Information (Basic Plan and Above)
 
 ```php
-if ( $asn = $info->get_asn() ) {
+if ($asn = $info->get_asn()) {
     $asn_number = $asn->get_asn();      // Returns: "AS15169"
     $asn_name = $asn->get_name();       // Returns: "Google LLC"
     $asn_domain = $asn->get_domain();   // Returns: "google.com"
@@ -82,7 +168,7 @@ if ( $asn = $info->get_asn() ) {
 ### Privacy Detection (Business/Premium Plans)
 
 ```php
-if ( $privacy = $info->get_privacy() ) {
+if ($privacy = $info->get_privacy()) {
     $is_vpn = $privacy->is_vpn();         // Returns: false
     $is_proxy = $privacy->is_proxy();      // Returns: false
     $is_tor = $privacy->is_tor();          // Returns: false
@@ -95,7 +181,7 @@ if ( $privacy = $info->get_privacy() ) {
 ### Company Information (Business/Premium Plans)
 
 ```php
-if ( $company = $info->get_company() ) {
+if ($company = $info->get_company()) {
     $name = $company->get_name();      // Returns: "Google LLC"
     $domain = $company->get_domain();  // Returns: "google.com"
     $type = $company->get_type();      // Returns: "hosting"
@@ -105,7 +191,7 @@ if ( $company = $info->get_company() ) {
 ### Abuse Contact Information (Business/Premium Plans)
 
 ```php
-if ( $abuse = $info->get_abuse() ) {
+if ($abuse = $info->get_abuse()) {
     $email = $abuse->get_email();     // Returns: "network-abuse@google.com"
     $name = $abuse->get_name();       // Returns: "Google LLC"
     $phone = $abuse->get_phone();     // Returns: "+1-650-253-0000"
@@ -118,52 +204,24 @@ if ( $abuse = $info->get_abuse() ) {
 ### Domains Information (Premium Plan Only)
 
 ```php
-if ( $domains = $info->get_domains() ) {
-    $total = $domains->get_total();     // Returns: 2
-    $page = $domains->get_page();       // Returns: 0
-    $list = $domains->get_domains();    // Returns: ['example.com', 'example.org']
+if ($domains = $info->get_domains()) {
+    $total = $domains->get_total();     // Returns: total number of domains
+    $page = $domains->get_page();       // Returns: current page number
+    $list = $domains->get_domains();    // Returns: array of domain names
 }
 ```
-
-## Configuration
-
-```php
-// Initialize with custom cache settings
-$client = new Client(
-    'your-token-here',    // IPInfo API token
-    true,                 // Enable caching
-    3600                  // Cache expiration in seconds
-);
-
-// Clear cache for specific IP
-$client->clear_cache( '8.8.8.8' );
-
-// Clear all cached data
-$client->clear_cache();
-```
-
-## Error Handling
-
-The library uses WordPress's `WP_Error` for error handling:
-
-```php
-$info = $client->get_ip_info( 'invalid-ip' );
-
-if ( is_wp_error( $info ) ) {
-    echo $info->get_error_message();
-    // Output: "Invalid IP address: invalid-ip"
-}
-```
-
-Common error cases:
-
-- Invalid IP address
-- Invalid API token
-- API request failure
-- Rate limit exceeded
-- Invalid response format
 
 ## Response Format Examples
+
+### Raw Data Access
+
+```php
+// Get full raw data array
+$raw_data = $info->get_all();
+
+// Magic property access
+$raw_data = $info->all;
+```
 
 ### Basic Plan Response
 
@@ -204,9 +262,66 @@ Common error cases:
         'relay' => false,
         'hosting' => true,
         'service' => null
+    ],
+    'abuse' => [
+        'address' => 'US, CA, Mountain View, 1600 Amphitheatre Parkway, 94043',
+        'country' => 'US',
+        'email' => 'network-abuse@google.com',
+        'name' => 'Network Abuse',
+        'network' => '8.8.8.0/24',
+        'phone' => '+1-650-253-0000'
     ]
 ]
 ```
+
+### Premium Plan Additional Data
+
+```php
+[
+    // ... business plan data ...
+    'domains' => [
+        'total' => 2535948,
+        'domains' => [
+            'pub.dev',
+            'virustotal.com',
+            'blooket.com',
+            'go.dev',
+            'rytr.me'
+        ]
+    ]
+]
+```
+
+### Batch Processing Response
+
+```php
+$batch_results = $client->get_batch_info(['8.8.8.8', '1.1.1.1']);
+// Returns:
+[
+    '8.8.8.8' => Response Object,
+    '1.1.1.1' => Response Object
+]
+```
+
+## Error Handling
+
+The library uses WordPress's `WP_Error` for error handling:
+
+```php
+$info = $client->get_ip_info('invalid-ip');
+
+if (is_wp_error($info)) {
+    echo $info->get_error_message();
+    // Output: "Invalid IP address: invalid-ip"
+}
+```
+
+Common error cases:
+- Invalid IP address
+- Invalid API token
+- API request failure
+- Rate limit exceeded
+- Invalid response format
 
 ## Contributions
 
