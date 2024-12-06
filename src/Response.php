@@ -42,6 +42,55 @@ class Response {
 	}
 
 	/**
+	 * Determine the IPInfo plan based on available data
+	 *
+	 * @return string Returns 'Free', 'Basic', 'Business', or 'Premium'
+	 */
+	public function get_plan(): string {
+		// Check for Premium plan (has domains data)
+		if ( isset( $this->data['domains'] ) ) {
+			return 'Premium';
+		}
+
+		// Check for Business plan (has privacy, abuse, or company data)
+		if ( isset( $this->data['privacy'] ) || isset( $this->data['abuse'] ) || isset( $this->data['company'] ) ) {
+			return 'Business';
+		}
+
+		// Check for Basic plan (has ASN data)
+		if ( isset( $this->data['asn'] ) ) {
+			return 'Basic';
+		}
+
+		// If none of the above, it's the Free plan
+		return 'Free';
+	}
+
+	/**
+	 * Check if the current plan has a specific feature
+	 *
+	 * @param string $feature Feature to check. One of: 'asn', 'privacy', 'abuse', 'company', 'domains'
+	 *
+	 * @return bool True if the feature is available in the current plan
+	 */
+	public function has_feature( string $feature ): bool {
+		$plan = $this->get_plan();
+
+		switch ( $feature ) {
+			case 'asn':
+				return in_array( $plan, [ 'Basic', 'Business', 'Premium' ] );
+			case 'privacy':
+			case 'abuse':
+			case 'company':
+				return in_array( $plan, [ 'Business', 'Premium' ] );
+			case 'domains':
+				return $plan === 'Premium';
+			default:
+				return false;
+		}
+	}
+
+	/**
 	 * Get the IP address
 	 *
 	 * @return string|null

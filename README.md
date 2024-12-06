@@ -82,7 +82,7 @@ if ( $asn = $info->get_asn() ) {
 ### Privacy Detection (Business/Premium Plans)
 
 ```php
-if ($privacy = $info->get_privacy()) {
+if ( $privacy = $info->get_privacy() ) {
     $is_vpn = $privacy->is_vpn();         // Returns: false
     $is_proxy = $privacy->is_proxy();      // Returns: false
     $is_tor = $privacy->is_tor();          // Returns: false
@@ -95,7 +95,7 @@ if ($privacy = $info->get_privacy()) {
 ### Company Information (Business/Premium Plans)
 
 ```php
-if ($company = $info->get_company()) {
+if ( $company = $info->get_company() ) {
     $name = $company->get_name();      // Returns: "Google LLC"
     $domain = $company->get_domain();  // Returns: "google.com"
     $type = $company->get_type();      // Returns: "hosting"
@@ -105,7 +105,7 @@ if ($company = $info->get_company()) {
 ### Abuse Contact Information (Business/Premium Plans)
 
 ```php
-if ($abuse = $info->get_abuse()) {
+if ( $abuse = $info->get_abuse() ) {
     $email = $abuse->get_email();     // Returns: "network-abuse@google.com"
     $name = $abuse->get_name();       // Returns: "Google LLC"
     $phone = $abuse->get_phone();     // Returns: "+1-650-253-0000"
@@ -118,7 +118,7 @@ if ($abuse = $info->get_abuse()) {
 ### Domains Information (Premium Plan Only)
 
 ```php
-if ($domains = $info->get_domains()) {
+if ( $domains = $info->get_domains() ) {
     $total = $domains->get_total();     // Returns: 2
     $page = $domains->get_page();       // Returns: 0
     $list = $domains->get_domains();    // Returns: ['example.com', 'example.org']
@@ -136,7 +136,7 @@ $client = new Client(
 );
 
 // Clear cache for specific IP
-$client->clear_cache('8.8.8.8');
+$client->clear_cache( '8.8.8.8' );
 
 // Clear all cached data
 $client->clear_cache();
@@ -147,9 +147,9 @@ $client->clear_cache();
 The library uses WordPress's `WP_Error` for error handling:
 
 ```php
-$info = $client->get_ip_info('invalid-ip');
+$info = $client->get_ip_info( 'invalid-ip' );
 
-if (is_wp_error($info)) {
+if ( is_wp_error( $info ) ) {
     echo $info->get_error_message();
     // Output: "Invalid IP address: invalid-ip"
 }
