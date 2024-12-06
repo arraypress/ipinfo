@@ -1,15 +1,10 @@
 <?php
 /**
- * IPInfo.io API Response Classes
- *
- * Contains all response-related classes for handling IPInfo.io API data.
- * Each class represents a specific data structure returned by the API.
+ * Domains Information
  *
  * @package     ArrayPress/Utils
  * @copyright   Copyright (c) 2024, ArrayPress Limited
  * @license     GPL2+
- * @version     1.0.0
- * @author      David Sherlock
  * @since       1.0.0
  */
 
@@ -22,8 +17,6 @@ namespace ArrayPress\IPInfo\Info;
  *
  * Represents domains information from the API.
  * Available in Premium plan only.
- *
- * @since 1.0.0
  */
 class Domains {
 

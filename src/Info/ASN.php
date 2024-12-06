@@ -1,15 +1,10 @@
 <?php
 /**
- * IPInfo.io API Response Classes
- *
- * Contains all response-related classes for handling IPInfo.io API data.
- * Each class represents a specific data structure returned by the API.
+ * ASN Information
  *
  * @package     ArrayPress/Utils
  * @copyright   Copyright (c) 2024, ArrayPress Limited
  * @license     GPL2+
- * @version     1.0.0
- * @author      David Sherlock
  * @since       1.0.0
  */
 
@@ -28,15 +23,12 @@ class ASN {
 	/**
 	 * Raw ASN data
 	 *
-	 * @since 1.0.0
 	 * @var array
 	 */
 	private array $data;
 
 	/**
 	 * Initialize ASN info
-	 *
-	 * @since 1.0.0
 	 *
 	 * @param array $data Raw ASN data from the API
 	 */
@@ -47,8 +39,6 @@ class ASN {
 	/**
 	 * Get the ASN number
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string|null
 	 */
 	public function get_asn(): ?string {
@@ -57,8 +47,6 @@ class ASN {
 
 	/**
 	 * Get the ASN name
-	 *
-	 * @since 1.0.0
 	 *
 	 * @return string|null
 	 */
@@ -69,8 +57,6 @@ class ASN {
 	/**
 	 * Get the ASN domain
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string|null
 	 */
 	public function get_domain(): ?string {
@@ -80,8 +66,6 @@ class ASN {
 	/**
 	 * Get the ASN route
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string|null
 	 */
 	public function get_route(): ?string {
@@ -90,8 +74,6 @@ class ASN {
 
 	/**
 	 * Get the ASN type
-	 *
-	 * @since 1.0.0
 	 *
 	 * @return string|null
 	 */

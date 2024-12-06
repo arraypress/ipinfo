@@ -16,13 +16,7 @@ declare( strict_types=1 );
 
 namespace ArrayPress\IPInfo;
 
-use ArrayPress\IPInfo\Info\{
-	Abuse,
-	ASN,
-	Company,
-	Domains,
-	Privacy
-};
+use ArrayPress\IPInfo\Info\{Abuse, ASN, Company, Continent, CountryCurrency, CountryFlag, Domains, Privacy};
 
 /**
  * Class Response
@@ -57,6 +51,24 @@ class Response {
 	}
 
 	/**
+	 * Get the hostname
+	 *
+	 * @return string|null
+	 */
+	public function get_hostname(): ?string {
+		return $this->data['hostname'] ?? null;
+	}
+
+	/**
+	 * Check if the IP is anycast
+	 *
+	 * @return bool
+	 */
+	public function is_anycast(): bool {
+		return (bool) ( $this->data['anycast'] ?? false );
+	}
+
+	/**
 	 * Get the city name
 	 *
 	 * @return string|null
@@ -84,21 +96,100 @@ class Response {
 	}
 
 	/**
+	 * Get the country name
+	 *
+	 * @return string|null
+	 */
+	public function get_country_name(): ?string {
+		return $this->data['country_name'] ?? null;
+	}
+
+	/**
+	 * Get the country flag information
+	 *
+	 * @return CountryFlag|null
+	 */
+	public function get_country_flag(): ?CountryFlag {
+		return isset( $this->data['country_flag'] ) ? new CountryFlag( $this->data['country_flag'] ) : null;
+	}
+
+	/**
+	 * Get the country flag URL
+	 *
+	 * @return string|null
+	 */
+	public function get_country_flag_url(): ?string {
+		return $this->data['country_flag_url'] ?? null;
+	}
+
+	/**
+	 * Get the country currency information
+	 *
+	 * @return CountryCurrency|null
+	 */
+	public function get_country_currency(): ?CountryCurrency {
+		return isset( $this->data['country_currency'] ) ? new CountryCurrency( $this->data['country_currency'] ) : null;
+	}
+
+	/**
+	 * Check if the country is in the European Union
+	 *
+	 * @return bool
+	 */
+	public function is_eu(): bool {
+		return (bool) ( $this->data['is_eu'] ?? false );
+	}
+
+	/**
+	 * Get the continent information
+	 *
+	 * @return Continent|null
+	 */
+	public function get_continent(): ?Continent {
+		return isset( $this->data['continent'] ) ? new Continent( $this->data['continent'] ) : null;
+	}
+
+	/**
 	 * Get the coordinates
 	 *
 	 * @return array|null Array with 'latitude' and 'longitude' or null if not available
 	 */
 	public function get_coordinates(): ?array {
-		if ( ! isset( $this->data['loc'] ) ) {
-			return null;
+		if ( isset( $this->data['latitude'], $this->data['longitude'] ) ) {
+			return [
+				'latitude'  => (float) $this->data['latitude'],
+				'longitude' => (float) $this->data['longitude']
+			];
 		}
 
-		list( $latitude, $longitude ) = array_pad( explode( ',', $this->data['loc'] ), 2, null );
+		if ( isset( $this->data['loc'] ) ) {
+			list( $latitude, $longitude ) = array_pad( explode( ',', $this->data['loc'] ), 2, null );
 
-		return [
-			'latitude'  => (float) $latitude,
-			'longitude' => (float) $longitude
-		];
+			return [
+				'latitude'  => (float) $latitude,
+				'longitude' => (float) $longitude
+			];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the latitude
+	 *
+	 * @return float|null
+	 */
+	public function get_latitude(): ?float {
+		return isset( $this->data['latitude'] ) ? (float) $this->data['latitude'] : null;
+	}
+
+	/**
+	 * Get the longitude
+	 *
+	 * @return float|null
+	 */
+	public function get_longitude(): ?float {
+		return isset( $this->data['longitude'] ) ? (float) $this->data['longitude'] : null;
 	}
 
 	/**
@@ -129,15 +220,6 @@ class Response {
 	}
 
 	/**
-	 * Get abuse contact information (Business plan and above)
-	 *
-	 * @return Abuse|null
-	 */
-	public function get_abuse(): ?Abuse {
-		return isset( $this->data['abuse'] ) ? new Abuse( $this->data['abuse'] ) : null;
-	}
-
-	/**
 	 * Get ASN information (Basic plan and above)
 	 *
 	 * @return ASN|null
@@ -156,15 +238,6 @@ class Response {
 	}
 
 	/**
-	 * Get domains information (Premium plan only)
-	 *
-	 * @return Domains|null
-	 */
-	public function get_domains(): ?Domains {
-		return isset( $this->data['domains'] ) ? new Domains( $this->data['domains'] ) : null;
-	}
-
-	/**
 	 * Get privacy information (Business plan and above)
 	 *
 	 * @return Privacy|null
@@ -174,12 +247,43 @@ class Response {
 	}
 
 	/**
+	 * Get abuse contact information (Business plan and above)
+	 *
+	 * @return Abuse|null
+	 */
+	public function get_abuse(): ?Abuse {
+		return isset( $this->data['abuse'] ) ? new Abuse( $this->data['abuse'] ) : null;
+	}
+
+	/**
+	 * Get domains information (Premium plan only)
+	 *
+	 * @return Domains|null
+	 */
+	public function get_domains(): ?Domains {
+		return isset( $this->data['domains'] ) ? new Domains( $this->data['domains'] ) : null;
+	}
+
+	/**
 	 * Get raw data array
 	 *
 	 * @return array
 	 */
-	public function get_raw_data(): array {
+	public function get_all(): array {
 		return $this->data;
+	}
+
+	/**
+	 * Magic getter for accessing the raw data array
+	 *
+	 * @return array
+	 */
+	public function __get( $name ) {
+		if ( $name === 'all' ) {
+			return $this->get_all();
+		}
+
+		return null;
 	}
 
 }
