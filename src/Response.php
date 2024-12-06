@@ -5,7 +5,7 @@
  * Contains all response-related classes for handling IPInfo.io API data.
  * Each class represents a specific data structure returned by the API.
  *
- * @package     ArrayPress/Utils
+ * @package     ArrayPress/IPInfo
  * @copyright   Copyright (c) 2024, ArrayPress Limited
  * @license     GPL2+
  * @version     1.0.0
@@ -42,27 +42,49 @@ class Response {
 	}
 
 	/**
+	 * Get raw data array
+	 *
+	 * @return array
+	 */
+	public function get_all(): array {
+		return $this->data;
+	}
+
+	/**
+	 * Magic getter for accessing the raw data array
+	 *
+	 * @return array|null
+	 */
+	public function __get( $name ) {
+		if ( $name === 'all' ) {
+			return $this->get_all();
+		}
+
+		return null;
+	}
+
+	//
+	// Plan & Feature Detection
+	//
+
+	/**
 	 * Determine the IPInfo plan based on available data
 	 *
 	 * @return string Returns 'Free', 'Basic', 'Business', or 'Premium'
 	 */
 	public function get_plan(): string {
-		// Check for Premium plan (has domains data)
 		if ( isset( $this->data['domains'] ) ) {
 			return 'Premium';
 		}
 
-		// Check for Business plan (has privacy, abuse, or company data)
 		if ( isset( $this->data['privacy'] ) || isset( $this->data['abuse'] ) || isset( $this->data['company'] ) ) {
 			return 'Business';
 		}
 
-		// Check for Basic plan (has ASN data)
 		if ( isset( $this->data['asn'] ) ) {
 			return 'Basic';
 		}
 
-		// If none of the above, it's the Free plan
 		return 'Free';
 	}
 
@@ -90,6 +112,10 @@ class Response {
 		}
 	}
 
+	//
+	// Basic Information
+	//
+
 	/**
 	 * Get the IP address
 	 *
@@ -116,6 +142,10 @@ class Response {
 	public function is_anycast(): bool {
 		return (bool) ( $this->data['anycast'] ?? false );
 	}
+
+	//
+	// Location Information
+	//
 
 	/**
 	 * Get the city name
@@ -145,12 +175,36 @@ class Response {
 	}
 
 	/**
+	 * Get the postal code
+	 *
+	 * @return string|null
+	 */
+	public function get_postal(): ?string {
+		return $this->data['postal'] ?? null;
+	}
+
+	/**
+	 * Get the timezone
+	 *
+	 * @return string|null
+	 */
+	public function get_timezone(): ?string {
+		return $this->data['timezone'] ?? null;
+	}
+
+	//
+	// Extended Location Information
+	//
+
+	/**
 	 * Get the country name
 	 *
 	 * @return string|null
 	 */
 	public function get_country_name(): ?string {
-		return $this->data['country_name'] ?? null;
+		$country_code = $this->get_country();
+
+		return $country_code ? Locations::get_country_name( $country_code ) : null;
 	}
 
 	/**
@@ -159,16 +213,10 @@ class Response {
 	 * @return CountryFlag|null
 	 */
 	public function get_country_flag(): ?CountryFlag {
-		return isset( $this->data['country_flag'] ) ? new CountryFlag( $this->data['country_flag'] ) : null;
-	}
+		$country_code = $this->get_country();
+		$flag_data    = $country_code ? Locations::get_flag( $country_code ) : null;
 
-	/**
-	 * Get the country flag URL
-	 *
-	 * @return string|null
-	 */
-	public function get_country_flag_url(): ?string {
-		return $this->data['country_flag_url'] ?? null;
+		return $flag_data ? new CountryFlag( $flag_data ) : null;
 	}
 
 	/**
@@ -177,16 +225,10 @@ class Response {
 	 * @return CountryCurrency|null
 	 */
 	public function get_country_currency(): ?CountryCurrency {
-		return isset( $this->data['country_currency'] ) ? new CountryCurrency( $this->data['country_currency'] ) : null;
-	}
+		$country_code  = $this->get_country();
+		$currency_data = $country_code ? Locations::get_currency( $country_code ) : null;
 
-	/**
-	 * Check if the country is in the European Union
-	 *
-	 * @return bool
-	 */
-	public function is_eu(): bool {
-		return (bool) ( $this->data['is_eu'] ?? false );
+		return $currency_data ? new CountryCurrency( $currency_data ) : null;
 	}
 
 	/**
@@ -195,8 +237,26 @@ class Response {
 	 * @return Continent|null
 	 */
 	public function get_continent(): ?Continent {
-		return isset( $this->data['continent'] ) ? new Continent( $this->data['continent'] ) : null;
+		$country_code   = $this->get_country();
+		$continent_data = $country_code ? Locations::get_continent( $country_code ) : null;
+
+		return $continent_data ? new Continent( $continent_data ) : null;
 	}
+
+	/**
+	 * Check if the country is in the European Union
+	 *
+	 * @return bool
+	 */
+	public function is_eu(): bool {
+		$country_code = $this->get_country();
+
+		return $country_code && Locations::is_eu( $country_code );
+	}
+
+	//
+	// Geographical Information
+	//
 
 	/**
 	 * Get the coordinates
@@ -241,6 +301,10 @@ class Response {
 		return isset( $this->data['longitude'] ) ? (float) $this->data['longitude'] : null;
 	}
 
+	//
+	// Organization Information
+	//
+
 	/**
 	 * Get the organization information
 	 *
@@ -250,23 +314,9 @@ class Response {
 		return $this->data['org'] ?? null;
 	}
 
-	/**
-	 * Get the postal code
-	 *
-	 * @return string|null
-	 */
-	public function get_postal(): ?string {
-		return $this->data['postal'] ?? null;
-	}
-
-	/**
-	 * Get the timezone
-	 *
-	 * @return string|null
-	 */
-	public function get_timezone(): ?string {
-		return $this->data['timezone'] ?? null;
-	}
+	//
+	// Enhanced Information (Basic Plan+)
+	//
 
 	/**
 	 * Get ASN information (Basic plan and above)
@@ -276,6 +326,10 @@ class Response {
 	public function get_asn(): ?ASN {
 		return isset( $this->data['asn'] ) ? new ASN( $this->data['asn'] ) : null;
 	}
+
+	//
+	// Business Information (Business Plan+)
+	//
 
 	/**
 	 * Get company information (Business plan and above)
@@ -304,6 +358,10 @@ class Response {
 		return isset( $this->data['abuse'] ) ? new Abuse( $this->data['abuse'] ) : null;
 	}
 
+	//
+	// Premium Information
+	//
+
 	/**
 	 * Get domains information (Premium plan only)
 	 *
@@ -312,27 +370,4 @@ class Response {
 	public function get_domains(): ?Domains {
 		return isset( $this->data['domains'] ) ? new Domains( $this->data['domains'] ) : null;
 	}
-
-	/**
-	 * Get raw data array
-	 *
-	 * @return array
-	 */
-	public function get_all(): array {
-		return $this->data;
-	}
-
-	/**
-	 * Magic getter for accessing the raw data array
-	 *
-	 * @return array
-	 */
-	public function __get( $name ) {
-		if ( $name === 'all' ) {
-			return $this->get_all();
-		}
-
-		return null;
-	}
-
 }

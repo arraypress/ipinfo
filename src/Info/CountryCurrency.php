@@ -2,7 +2,7 @@
 /**
  * Country Currency Information
  *
- * @package     ArrayPress/Utils
+ * @package     ArrayPress/IPInfo
  * @copyright   Copyright (c) 2024, ArrayPress Limited
  * @license     GPL2+
  * @since       1.0.0
