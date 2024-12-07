@@ -13,7 +13,7 @@ composer require arraypress/ipinfo
 ## Requirements
 
 - PHP 7.4 or later
-- WordPress 6.2.2 or later
+- WordPress 6.7.1 or later
 - IPInfo.io API key
 
 ## Basic Usage
@@ -62,7 +62,7 @@ $info = $client->get_ip_info( '8.8.8.8' );
 $field = $client->get_field( '8.8.8.8', 'country' );
 
 // Get multiple fields
-$fields = $client->get_fields( '8.8.8.8', ['country', 'city'] );
+$fields = $client->get_fields( '8.8.8.8', [ 'country', 'city' ] );
 
 // Process multiple IPs (max 1000)
 $results = $client->get_batch_info(
@@ -133,19 +133,19 @@ $has_domains = $info->has_feature( 'domains' ); // Premium plan only
 
 // Extended country information
 $flag = $info->get_country_flag();
-if ($flag) {
+if ( $flag ) {
     $emoji = $flag->get_emoji();     // Returns: "🇺🇸"
     $unicode = $flag->get_unicode();  // Returns: "U+1F1FA U+1F1F8"
 }
 
 $currency = $info->get_country_currency();
-if ($currency) {
+if ( $currency ) {
     $code = $currency->get_code();    // Returns: "USD"
     $symbol = $currency->get_symbol(); // Returns: "$"
 }
 
 $continent = $info->get_continent();
-if ($continent) {
+if ( $continent ) {
     $name = $continent->get_name();   // Returns: "North America"
     $code = $continent->get_code();   // Returns: "NA"
 }
@@ -156,7 +156,7 @@ $is_eu = $info->is_eu(); // Returns: true/false
 ### ASN Information (Basic Plan and Above)
 
 ```php
-if ($asn = $info->get_asn()) {
+if ( $asn = $info->get_asn() ) {
     $asn_number = $asn->get_asn();      // Returns: "AS15169"
     $asn_name = $asn->get_name();       // Returns: "Google LLC"
     $asn_domain = $asn->get_domain();   // Returns: "google.com"
@@ -168,7 +168,7 @@ if ($asn = $info->get_asn()) {
 ### Privacy Detection (Business/Premium Plans)
 
 ```php
-if ($privacy = $info->get_privacy()) {
+if ( $privacy = $info->get_privacy() ) {
     $is_vpn = $privacy->is_vpn();         // Returns: false
     $is_proxy = $privacy->is_proxy();      // Returns: false
     $is_tor = $privacy->is_tor();          // Returns: false
@@ -181,7 +181,7 @@ if ($privacy = $info->get_privacy()) {
 ### Company Information (Business/Premium Plans)
 
 ```php
-if ($company = $info->get_company()) {
+if ( $company = $info->get_company() ) {
     $name = $company->get_name();      // Returns: "Google LLC"
     $domain = $company->get_domain();  // Returns: "google.com"
     $type = $company->get_type();      // Returns: "hosting"
@@ -191,7 +191,7 @@ if ($company = $info->get_company()) {
 ### Abuse Contact Information (Business/Premium Plans)
 
 ```php
-if ($abuse = $info->get_abuse()) {
+if ( $abuse = $info->get_abuse() ) {
     $email = $abuse->get_email();     // Returns: "network-abuse@google.com"
     $name = $abuse->get_name();       // Returns: "Google LLC"
     $phone = $abuse->get_phone();     // Returns: "+1-650-253-0000"
@@ -204,7 +204,7 @@ if ($abuse = $info->get_abuse()) {
 ### Domains Information (Premium Plan Only)
 
 ```php
-if ($domains = $info->get_domains()) {
+if ( $domains = $info->get_domains() ) {
     $total = $domains->get_total();     // Returns: total number of domains
     $page = $domains->get_page();       // Returns: current page number
     $list = $domains->get_domains();    // Returns: array of domain names
@@ -295,7 +295,7 @@ $raw_data = $info->all;
 ### Batch Processing Response
 
 ```php
-$batch_results = $client->get_batch_info(['8.8.8.8', '1.1.1.1']);
+$batch_results = $client->get_batch_info( [ '8.8.8.8', '1.1.1.1' ] );
 // Returns:
 [
     '8.8.8.8' => Response Object,
@@ -308,9 +308,9 @@ $batch_results = $client->get_batch_info(['8.8.8.8', '1.1.1.1']);
 The library uses WordPress's `WP_Error` for error handling:
 
 ```php
-$info = $client->get_ip_info('invalid-ip');
+$info = $client->get_ip_info( 'invalid-ip' );
 
-if (is_wp_error($info)) {
+if ( is_wp_error( $info ) ) {
     echo $info->get_error_message();
     // Output: "Invalid IP address: invalid-ip"
 }
