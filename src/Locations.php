@@ -294,8 +294,7 @@ class Locations {
 		"BV" => "Bouvet Island",
 		"BW" => "Botswana",
 		"WS" => "Samoa",
-		"BQ" => "Bonaire,
-Saint Eustatius and Saba ",
+		"BQ" => "Bonaire, Saint Eustatius and Saba ",
 		"BR" => "Brazil",
 		"BS" => "Bahamas",
 		"JE" => "Jersey",
@@ -1120,6 +1119,70 @@ Saint Eustatius and Saba ",
 	 */
 	public static function is_eu( string $code ): bool {
 		return in_array( $code, self::EU, true );
+	}
+
+	/**
+	 * Get the country options.
+	 *
+	 * @param bool $sort Optional. Whether to sort the options alphabetically by label. Default true.
+	 *
+	 * @return array An array of country options with label and value.
+	 */
+	public static function get_countries( bool $sort = true ): array {
+		$options = [];
+
+		foreach ( self::COUNTRIES as $country_code => $country_name ) {
+			if ( empty( $country_code ) || empty( $country_name ) ) {
+				continue;
+			}
+
+			$options[] = [
+				'label' => esc_html( html_entity_decode( $country_name ) ),
+				'value' => esc_attr( $country_code ),
+			];
+		}
+
+		if ( $sort ) {
+			usort( $options, function ( $a, $b ) {
+				return strcmp( $a['label'], $b['label'] );
+			} );
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Get the currency options.
+	 *
+	 * @param bool $sort Optional. Whether to sort the options alphabetically by label. Default true.
+	 *
+	 * @return array An array of currency options with label and value.
+	 */
+	public static function get_currencies( bool $sort = true ): array {
+		$options         = [];
+		$used_currencies = [];
+
+		foreach ( self::CURRENCIES as $country_code => $currency_data ) {
+			$code   = $currency_data['code'];
+			$symbol = $currency_data['symbol'];
+
+			// Only add each currency once (since multiple countries can use the same currency)
+			if ( ! isset( $used_currencies[ $code ] ) ) {
+				$options[]                = [
+					'label' => sprintf( '%s (%s)', $code, $symbol ),
+					'value' => esc_attr( $code ),
+				];
+				$used_currencies[ $code ] = true;
+			}
+		}
+
+		if ( $sort ) {
+			usort( $options, function ( $a, $b ) {
+				return strcmp( $a['label'], $b['label'] );
+			} );
+		}
+
+		return $options;
 	}
 
 }
