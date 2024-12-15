@@ -23,8 +23,7 @@
     "optimize-autoloader": true,
     "sort-packages": true
   },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
+  "minimum-stability": "stable",
   "support": {
     "issues": "https://github.com/arraypress/ipinfo/issues",
     "source": "https://github.com/arraypress/ipinfo"
