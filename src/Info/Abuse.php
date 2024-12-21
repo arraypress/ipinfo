@@ -30,8 +30,6 @@ class Abuse {
 	/**
 	 * Initialize abuse info
 	 *
-	 * @since 1.0.0
-	 *
 	 * @param array $data Raw abuse contact data from the API
 	 */
 	public function __construct( array $data ) {
@@ -40,8 +38,6 @@ class Abuse {
 
 	/**
 	 * Get the abuse contact address
-	 *
-	 * @since 1.0.0
 	 *
 	 * @return string|null
 	 */
@@ -52,8 +48,6 @@ class Abuse {
 	/**
 	 * Get the abuse contact country
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string|null
 	 */
 	public function get_country(): ?string {
@@ -62,8 +56,6 @@ class Abuse {
 
 	/**
 	 * Get the abuse contact email
-	 *
-	 * @since 1.0.0
 	 *
 	 * @return string|null
 	 */
@@ -74,8 +66,6 @@ class Abuse {
 	/**
 	 * Get the abuse contact name
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string|null
 	 */
 	public function get_name(): ?string {
@@ -85,8 +75,6 @@ class Abuse {
 	/**
 	 * Get the abuse contact network
 	 *
-	 * @since 1.0.0
-	 *
 	 * @return string|null
 	 */
 	public function get_network(): ?string {
@@ -95,8 +83,6 @@ class Abuse {
 
 	/**
 	 * Get the abuse contact phone
-	 *
-	 * @since 1.0.0
 	 *
 	 * @return string|null
 	 */
