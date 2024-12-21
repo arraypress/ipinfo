@@ -2,7 +2,7 @@
 /**
  * IPInfo.io Client Class
  *
- * @package     ArrayPress/Utils
+ * @package     ArrayPress/IPInfo
  * @copyright   Copyright (c) 2024, ArrayPress Limited
  * @license     GPL2+
  * @version     1.0.0
@@ -13,6 +13,8 @@ declare( strict_types=1 );
 
 namespace ArrayPress\IPInfo;
 
+use ArrayPress\IPInfo\Traits\Parameters;
+use ArrayPress\IPInfo\Utils\IP;
 use WP_Error;
 
 /**
@@ -21,13 +23,7 @@ use WP_Error;
  * A comprehensive utility class for interacting with the IPInfo.io API service.
  */
 class Client {
-
-	/**
-	 * API token for IPInfo.io
-	 *
-	 * @var string
-	 */
-	private string $token;
+	use Parameters;
 
 	/**
 	 * Base URL for the IPInfo API
@@ -51,30 +47,16 @@ class Client {
 	private const BATCH_TIMEOUT = 5;
 
 	/**
-	 * Whether to enable response caching
-	 *
-	 * @var bool
-	 */
-	private bool $enable_cache;
-
-	/**
-	 * Cache expiration time in seconds
-	 *
-	 * @var int
-	 */
-	private int $cache_expiration;
-
-	/**
 	 * Initialize the IPInfo client
 	 *
-	 * @param string $token            API token for IPInfo.io
+	 * @param string $api_key          API token for IPInfo.io
 	 * @param bool   $enable_cache     Whether to enable caching (default: true)
 	 * @param int    $cache_expiration Cache expiration in seconds (default: 1 hour)
 	 */
-	public function __construct( string $token, bool $enable_cache = true, int $cache_expiration = 3600 ) {
-		$this->token            = $token;
-		$this->enable_cache     = $enable_cache;
-		$this->cache_expiration = $cache_expiration;
+	public function __construct( string $api_key, bool $enable_cache = true, int $cache_expiration = HOUR_IN_SECONDS ) {
+		$this->set_api_key( $api_key );
+		$this->set_cache_enabled( $enable_cache );
+		$this->set_cache_expiration( $cache_expiration );
 	}
 
 	/**
@@ -88,7 +70,7 @@ class Client {
 	private function make_get_request( string $endpoint, array $args = [] ) {
 		$default_args = [
 			'headers' => [
-				'Authorization' => 'Bearer ' . $this->token,
+				'Authorization' => 'Bearer ' . $this->get_api_key(),
 				'Accept'        => 'application/json',
 			],
 			'timeout' => 15,
@@ -112,7 +94,7 @@ class Client {
 	private function make_post_request( string $endpoint, array $body, array $args = [] ) {
 		$default_args = [
 			'headers' => [
-				'Authorization' => 'Bearer ' . $this->token,
+				'Authorization' => 'Bearer ' . $this->get_api_key(),
 				'Accept'        => 'application/json',
 				'Content-Type'  => 'application/json',
 			],
@@ -192,7 +174,7 @@ class Client {
 
 		$cache_key = $this->get_cache_key( $ip );
 
-		if ( $this->enable_cache ) {
+		if ( $this->is_cache_enabled() ) {
 			$cached_data = get_transient( $cache_key );
 			if ( false !== $cached_data ) {
 				return new Response( $cached_data );
@@ -205,8 +187,8 @@ class Client {
 			return $response;
 		}
 
-		if ( $this->enable_cache ) {
-			set_transient( $cache_key, $response, $this->cache_expiration );
+		if ( $this->is_cache_enabled() ) {
+			set_transient( $cache_key, $response, $this->get_cache_expiration() );
 		}
 
 		return new Response( $response );
@@ -250,8 +232,8 @@ class Client {
 			}
 
 			foreach ( $batch_results as $ip => $data ) {
-				if ( $this->enable_cache ) {
-					set_transient( $this->get_cache_key( $ip ), $data, $this->cache_expiration );
+				if ( $this->is_cache_enabled() ) {
+					set_transient( $this->get_cache_key( $ip ), $data, $this->get_cache_expiration() );
 				}
 				$results[ $ip ] = new Response( $data );
 			}
@@ -269,7 +251,7 @@ class Client {
 	 */
 	private function get_cached_batch_results( array $ips ): array {
 		$results = [];
-		if ( $this->enable_cache ) {
+		if ( $this->is_cache_enabled() ) {
 			foreach ( $ips as $ip ) {
 				$cached_data = get_transient( $this->get_cache_key( $ip ) );
 				if ( false !== $cached_data ) {
@@ -314,7 +296,7 @@ class Client {
 
 		$cache_key = $this->get_cache_key( $ip . '/' . $field );
 
-		if ( $this->enable_cache ) {
+		if ( $this->is_cache_enabled() ) {
 			$cached_data = get_transient( $cache_key );
 			if ( false !== $cached_data ) {
 				return $cached_data;
@@ -331,8 +313,8 @@ class Client {
 		$value = is_array( $response ) ? wp_remote_retrieve_body( $response ) : $response;
 		$value = trim( $value, "\" \t\n\r\0\x0B" );
 
-		if ( $this->enable_cache ) {
-			set_transient( $cache_key, $value, $this->cache_expiration );
+		if ( $this->is_cache_enabled() ) {
+			set_transient( $cache_key, $value, $this->get_cache_expiration() );
 		}
 
 		return $value;
@@ -374,7 +356,7 @@ class Client {
 	 * @return string Cache key
 	 */
 	private function get_cache_key( string $ip ): string {
-		return 'ipinfo_' . md5( $ip . $this->token );
+		return 'ipinfo_' . md5( $ip . $this->get_api_key() );
 	}
 
 	/**

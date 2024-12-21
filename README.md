@@ -21,8 +21,8 @@ composer require arraypress/ipinfo
 ```php
 use ArrayPress\IPInfo\Client;
 
-// Initialize with your API token
-$client = new Client( 'your-token-here' );
+// Initialize with your API key/token
+$client = new Client( 'your-api-key-here' );
 
 // Single IP lookup
 $info = $client->get_ip_info( '8.8.8.8' );
@@ -33,7 +33,7 @@ $city = $client->get_field( '8.8.8.8', 'city' );       // Returns: "Mountain Vie
 
 // Get multiple specific fields
 $fields = $client->get_fields( '8.8.8.8', ['country', 'city', 'org'] );
-// Returns: ['country' => 'US', 'city' => 'Mountain View', 'org' => 'Google LLC']
+// Returns: [ 'country' => 'US', 'city' => 'Mountain View', 'org' => 'Google LLC' ]
 
 // Batch processing multiple IPs
 $ips = [ '8.8.8.8', '1.1.1.1' ];
@@ -318,7 +318,7 @@ if ( is_wp_error( $info ) ) {
 
 Common error cases:
 - Invalid IP address
-- Invalid API token
+- Invalid API key/token
 - API request failure
 - Rate limit exceeded
 - Invalid response format

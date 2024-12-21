@@ -11,7 +11,7 @@
 
 declare( strict_types=1 );
 
-namespace ArrayPress\IPInfo;
+namespace ArrayPress\IPInfo\Utils;
 
 /**
  * Class Utils
