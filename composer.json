@@ -24,7 +24,8 @@
     "sort-packages": true,
     "preferred-install": "dist"
   },
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "support": {
     "issues": "https://github.com/arraypress/ipinfo/issues",
     "source": "https://github.com/arraypress/ipinfo"
