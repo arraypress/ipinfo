@@ -153,7 +153,11 @@ class IP {
 		$mask           = str_repeat( "\xFF", $bits >> 3 );
 		$remaining_bits = $bits & 7;
 		if ( $remaining_bits ) {
-			$mask .= chr( 0xFF << ( 8 - $remaining_bits ) );
+			// Masked to a byte explicitly. 0xFF << 7 is 32640, and chr() has
+			// been quietly folding that with % 256 -- deprecated since PHP 8.3
+			// and an error later. The & 0xFF produces the same byte for every
+			// prefix length, by intent rather than by accident.
+			$mask .= chr( ( 0xFF << ( 8 - $remaining_bits ) ) & 0xFF );
 		}
 		$mask = str_pad( $mask, strlen( $ip ), "\x00" );
 

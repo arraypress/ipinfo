@@ -14,6 +14,7 @@ declare( strict_types=1 );
 namespace ArrayPress\IPInfo;
 
 use ArrayPress\IPInfo\Traits\Parameters;
+use ArrayPress\IPInfo\Traits\FailureCache;
 use ArrayPress\IPInfo\Utils\IP;
 use WP_Error;
 
@@ -24,6 +25,7 @@ use WP_Error;
  */
 class Client {
 	use Parameters;
+	use FailureCache;
 
 	/**
 	 * Base URL for the IPInfo API
@@ -181,9 +183,17 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again. Answer
+		// now rather than making this visitor wait out the timeout as well.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_get_request( $ip );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -303,9 +313,15 @@ class Client {
 			}
 		}
 
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_get_request( $ip . '/' . $field );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
