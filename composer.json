@@ -1,6 +1,5 @@
 {
   "name": "arraypress/ipinfo",
-  "version": "1.0.0",
   "description": "A PHP library for integrating with the IPInfo.io API in WordPress, providing geolocation, ASN data, privacy detection, and hosting information. Features plan-aware responses and WordPress transient caching.",
   "type": "library",
   "license": "GPL-2.0-or-later",
@@ -12,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=7.4"
+    "php": ">=8.2"
   },
   "autoload": {
     "psr-4": {
