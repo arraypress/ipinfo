@@ -1,63 +1,41 @@
-# Development files
+# What reaches somebody's site.
+#
+# Composer installs a package from a git archive, and git archive honours
+# export-ignore, so everything listed here stops at the repository. That
+# matters more than tidiness: a plugin's vendor directory is scanned, by
+# WordPress.org on submission and by security plugins on the live site, and
+# a test suite full of stubbed core functions is not what anyone wants found
+# in there.
+#
+# src/, assets/, templates/, data/, composer.json and the README ship.
+# Everything that only matters while working on the library does not.
+
+# The suite, and the stubbed core functions it runs against
+/tests export-ignore
+/phpunit.xml export-ignore
+/phpunit.xml.dist export-ignore
+/.phpunit.result.cache export-ignore
+/.phpunit.cache export-ignore
+
+# Continuous integration
+/.github export-ignore
+
+# Coding standards
+/phpcs.xml export-ignore
+/phpcs.xml.dist export-ignore
+/phpcs-format.xml.dist export-ignore
+/phpstan.neon export-ignore
+
+# Repository furniture
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /.editorconfig export-ignore
-/.php_cs.dist export-ignore
-/.php_cs export-ignore
-/.phpcs.xml export-ignore
-/phpcs.xml export-ignore
-/phpunit.xml export-ignore
-/phpstan.neon export-ignore
-/.travis.yml export-ignore
-/.scrutinizer.yml export-ignore
-/codecov.yml export-ignore
-/.coveralls.yml export-ignore
-/.styleci.yml export-ignore
-/psalm.xml export-ignore
-
-# Documentation
-/README.md export-ignore
-/CHANGELOG.md export-ignore
-/CONTRIBUTING.md export-ignore
-/CODE_OF_CONDUCT.md export-ignore
-/LICENSE.md export-ignore
-/UPGRADE.md export-ignore
-/docs export-ignore
-/examples export-ignore
-
-# Development directories
-/tests export-ignore
-/.github export-ignore
-/.circleci export-ignore
-/.gitlab export-ignore
-/build export-ignore
-/.husky export-ignore
-/.yarn export-ignore
-/node_modules export-ignore
-
-# Development tools configuration
 /composer.lock export-ignore
-/package.json export-ignore
-/package-lock.json export-ignore
-/yarn.lock export-ignore
-/.npmignore export-ignore
-/.eslintrc export-ignore
-/.eslintignore export-ignore
-/.prettierrc export-ignore
-/.prettierignore export-ignore
-/tsconfig.json export-ignore
-/webpack.config.js export-ignore
-/babel.config.js export-ignore
-/jest.config.js export-ignore
-/renovate.json export-ignore
+/.DS_Store export-ignore
 
-# Local development files
-/.env export-ignore
-/.env.example export-ignore
-/docker-compose.yml export-ignore
-/Dockerfile export-ignore
-/.docker export-ignore
-
-# Asset source files
-/assets/src export-ignore
-/.sass-cache export-ignore
+# Long-form documentation and demonstrations. The README ships.
+/examples export-ignore
+/example export-ignore
+/EXAMPLES.md export-ignore
+/CHANGELOG.md export-ignore
+/SECURITY.md export-ignore
