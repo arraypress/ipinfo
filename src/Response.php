@@ -98,11 +98,11 @@ class Response {
 
 		switch ( $feature ) {
 			case 'asn':
-				return in_array( $plan, [ 'Basic', 'Business', 'Premium' ] );
+				return in_array( $plan, [ 'Basic', 'Business', 'Premium' ], true );
 			case 'privacy':
 			case 'abuse':
 			case 'company':
-				return in_array( $plan, [ 'Business', 'Premium' ] );
+				return in_array( $plan, [ 'Business', 'Premium' ], true );
 			case 'domains':
 				return $plan === 'Premium';
 			default:
@@ -257,7 +257,7 @@ class Response {
 		if ( isset( $this->data['latitude'], $this->data['longitude'] ) ) {
 			return [
 				'latitude'  => (float) $this->data['latitude'],
-				'longitude' => (float) $this->data['longitude']
+				'longitude' => (float) $this->data['longitude'],
 			];
 		}
 
@@ -266,7 +266,7 @@ class Response {
 
 			return [
 				'latitude'  => (float) $latitude,
-				'longitude' => (float) $longitude
+				'longitude' => (float) $longitude,
 			];
 		}
 
@@ -352,5 +352,4 @@ class Response {
 	public function get_domains(): ?Domains {
 		return isset( $this->data['domains'] ) ? new Domains( $this->data['domains'] ) : null;
 	}
-
 }

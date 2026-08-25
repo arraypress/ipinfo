@@ -52,5 +52,4 @@ class Continent {
 	public function get_name(): ?string {
 		return $this->data['name'] ?? null;
 	}
-
 }

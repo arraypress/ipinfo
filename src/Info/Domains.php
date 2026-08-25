@@ -62,5 +62,4 @@ class Domains {
 	public function get_page(): int {
 		return $this->data['page'] ?? 0;
 	}
-
 }

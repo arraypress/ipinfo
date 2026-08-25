@@ -52,5 +52,4 @@ class CountryFlag {
 	public function get_unicode(): ?string {
 		return $this->data['unicode'] ?? null;
 	}
-
 }

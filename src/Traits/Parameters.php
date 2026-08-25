@@ -34,7 +34,7 @@ trait Parameters {
 	 */
 	private array $cache_settings = [
 		'enabled'    => true,
-		'expiration' => HOUR_IN_SECONDS
+		'expiration' => HOUR_IN_SECONDS,
 	];
 
 	/** Token *******************************************************************/
@@ -115,5 +115,4 @@ trait Parameters {
 	public function get_cache_settings(): array {
 		return $this->cache_settings;
 	}
-
 }

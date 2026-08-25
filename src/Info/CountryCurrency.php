@@ -52,5 +52,4 @@ class CountryCurrency {
 	public function get_symbol(): ?string {
 		return $this->data['symbol'] ?? null;
 	}
-
 }

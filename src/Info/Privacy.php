@@ -89,5 +89,4 @@ class Privacy {
 	public function get_service(): ?string {
 		return $this->data['service'] ?? null;
 	}
-
 }

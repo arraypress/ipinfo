@@ -80,5 +80,4 @@ class ASN {
 	public function get_type(): ?string {
 		return $this->data['type'] ?? null;
 	}
-
 }

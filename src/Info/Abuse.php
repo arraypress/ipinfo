@@ -89,5 +89,4 @@ class Abuse {
 	public function get_phone(): ?string {
 		return $this->data['phone'] ?? null;
 	}
-
 }

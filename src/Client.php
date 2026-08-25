@@ -122,6 +122,7 @@ class Client {
 			return new WP_Error(
 				'api_error',
 				sprintf(
+					/* translators: %s: the error message returned by WP_Http. */
 					__( 'IPInfo API request failed: %s', 'arraypress' ),
 					$response->get_error_message()
 				)
@@ -133,6 +134,7 @@ class Client {
 			return new WP_Error(
 				'api_error',
 				sprintf(
+					/* translators: %d: the HTTP status code returned by IPInfo. */
 					__( 'IPInfo API returned error code: %d', 'arraypress' ),
 					$status_code
 				)
@@ -170,6 +172,7 @@ class Client {
 		if ( ! IP::is_valid_for_lookup( $ip ) ) {
 			return new WP_Error(
 				'invalid_ip',
+				/* translators: %s: the IP address that failed validation. */
 				sprintf( __( 'Invalid or bogon IP address: %s', 'arraypress' ), $ip )
 			);
 		}
@@ -300,6 +303,7 @@ class Client {
 		if ( ! IP::is_valid_for_lookup( $ip ) ) {
 			return new WP_Error(
 				'invalid_ip',
+				/* translators: %s: the IP address that failed validation. */
 				sprintf( __( 'Invalid IP address: %s', 'arraypress' ), $ip )
 			);
 		}
@@ -348,6 +352,7 @@ class Client {
 		if ( ! IP::is_valid_for_lookup( $ip ) ) {
 			return new WP_Error(
 				'invalid_ip',
+				/* translators: %s: the IP address that failed validation. */
 				sprintf( __( 'Invalid IP address: %s', 'arraypress' ), $ip )
 			);
 		}
@@ -388,13 +393,28 @@ class Client {
 		}
 
 		global $wpdb;
-		$pattern = $wpdb->esc_like( '_transient_ipinfo_' ) . '%';
 
-		return $wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-					$pattern
-				) ) !== false;
+		/*
+		 * Find the names, then let delete_transient() do the deleting.
+		 *
+		 * Deleting the rows directly leaves every matching
+		 * _transient_timeout_* row behind -- those do not carry the prefix, so
+		 * a DELETE ... LIKE orphans one options row per cached lookup,
+		 * permanently. delete_transient() removes both halves, fires the
+		 * delete_transient_* hooks, and clears the entry from an external
+		 * object cache, none of which a raw DELETE does.
+		 */
+		$like = $wpdb->esc_like( '_transient_ipinfo_' ) . '%';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$names = $wpdb->get_col(
+			$wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $like )
+		);
+
+		foreach ( (array) $names as $name ) {
+			delete_transient( substr( (string) $name, strlen( '_transient_' ) ) );
+		}
+
+		return true;
 	}
-
 }

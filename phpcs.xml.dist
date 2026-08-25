@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ruleset name="Wp Ipinfo">
+    <description>Defect-hunting sniffs. Preferences live in phpcs-format.xml.dist.</description>
+
+    <file>src</file>
+
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <config name="testVersion" value="8.3-"/>
+    <config name="installed_paths" value="vendor/wp-coding-standards/wpcs,vendor/phpcompatibility/php-compatibility,vendor/phpcompatibility/phpcompatibility-paragonie,vendor/phpcompatibility/phpcompatibility-wp,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra"/>
+
+    <rule ref="PHPCompatibilityWP"/>
+
+    <rule ref="WordPress.Security"/>
+    <rule ref="WordPress.DB"/>
+    <rule ref="WordPress.WP.I18n"/>
+
+    <!--
+        No runtime code interpreter, anywhere that ships. It is a construct
+        WordPress security scanners report on sight, and a plugin's vendor
+        directory does get scanned: by WordPress.org on submission, and by
+        security plugins on the live site. The sniff is only a warning by
+        default, and a warning does not fail CI.
+    -->
+    <rule ref="Squiz.PHP.Eval">
+        <type>error</type>
+    </rule>
+
+</ruleset>
