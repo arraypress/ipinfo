@@ -11,7 +11,8 @@
     }
   ],
   "require": {
-    "php": ">=8.3"
+    "php": ">=8.3",
+    "arraypress/wp-countries": "^1.0"
   },
   "autoload": {
     "psr-4": {
