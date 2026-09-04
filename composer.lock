@@ -4,8 +4,77 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6c63a6a49999bb136a3da718d4a2566",
-    "packages": [],
+    "content-hash": "3b4767dbce08449e63f6e5b4d6878468",
+    "packages": [
+        {
+            "name": "arraypress/wp-countries",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/arraypress/wp-countries.git",
+                "reference": "b2acc6234edea21f6d50a3c9efb57a00b73077db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arraypress/wp-countries/zipball/b2acc6234edea21f6d50a3c9efb57a00b73077db",
+                "reference": "b2acc6234edea21f6d50a3c9efb57a00b73077db",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.3"
+            },
+            "require-dev": {
+                "phpcompatibility/phpcompatibility-wp": "^2.1",
+                "phpunit/phpunit": "^12.0",
+                "squizlabs/php_codesniffer": "^3.13.5",
+                "wp-coding-standards/wpcs": "^3.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Functions.php"
+                ],
+                "psr-4": {
+                    "ArrayPress\\Countries\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "David Sherlock",
+                    "homepage": "https://arraypress.com/"
+                }
+            ],
+            "description": "A lightweight WordPress library for working with country codes and names with translation support.",
+            "homepage": "https://github.com/arraypress/wp-countries",
+            "keywords": [
+                "arraypress",
+                "countries",
+                "country-codes",
+                "country-list",
+                "country-names",
+                "i18n",
+                "iso-3166",
+                "translation",
+                "wordpress",
+                "wp"
+            ],
+            "support": {
+                "issues": "https://github.com/arraypress/wp-countries/issues",
+                "source": "https://github.com/arraypress/wp-countries"
+            },
+            "time": "2026-09-02T16:26:05+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -2332,7 +2401,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "arraypress/wp-countries": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
